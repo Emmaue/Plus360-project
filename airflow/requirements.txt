@@ -1,0 +1,12 @@
+apache-airflow==3.0.1
+
+# Common SQL should not be pinned unless you're troubleshooting
+apache-airflow-providers-common-sql
+
+# Specific providers you need
+apache-airflow-providers-postgres==5.10.1
+apache-airflow-providers-mysql[mysql]==5.6.1
+apache-airflow-providers-microsoft-mssql[mssql]==3.6.1
+apache-airflow-providers-google[gcp]==10.14.0
+apache-airflow-providers-amazon[amazon]==8.13.0
+apache-airflow-providers-snowflake[snowflake]==5.6.0
