@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw_schema
+    tables:
+      - name: CONTACTS_CLEAN
+      - name: CONTENT_TYPE
+      - name: DATE_DIM
+      - name: MAIN_DEALS
+      - name: PLATFORMS
+      - name: PRODUCT_PLANS
+      - name: RAW_CONTACTS
+      - name: TIME_DIM
+      - name: YOUTUBE_AD_REVENUE_RAW
+      - name: YOUTUBE_CONTENT_RAW
+      - name: YOUTUBE_ENGAGEMENT_RAW
