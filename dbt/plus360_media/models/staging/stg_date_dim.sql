@@ -2,7 +2,7 @@
 
 with date_dim as (
     select
-        {{ generate_pk(['date_key']) }} as date_pk,
+        {{ preserve_pk('date_key') }} as date_pk,
         coalesce(cast(date as date), to_date('1900-01-01')) as date,
         coalesce(cast(day as varchar), 'Unknown') as day,
         coalesce(cast(month as varchar), 'Unknown') as month,

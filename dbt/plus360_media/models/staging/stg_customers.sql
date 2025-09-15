@@ -2,12 +2,12 @@
 
 with customer as(
 Select
-    {{ generate_pk(['customer_id']) }} as Customer_id,
+    {{ preserve_pk('customer_id') }} as Customer_id,
     coalesce(company, 'N/A') as company,
     coalesce(country, 'N/A') as country,
     coalesce(city, 'N/A') as city,
     cast(signup_date as date) as signup_date,
-    coalesce(customer_status, 'Unknown') as customer_status
+    coalesce(customer_status, 'No status') as customer_status
 from {{ source('raw', 'CONTACTS_CLEAN') }}
 )
 
