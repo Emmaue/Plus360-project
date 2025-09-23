@@ -1,4 +1,4 @@
-echo "# Plus360 Project Git Ignore
+# Python
 __pycache__/
 *.pyc
 .env
@@ -15,7 +15,6 @@ dbt/logs/
 dbt/.user.yml
 dbt/profiles.yml
 
-
 # VSCode
 .vscode/
 *.code-workspace
@@ -23,4 +22,3 @@ dbt/profiles.yml
 # OS files
 .DS_Store
 Thumbs.db
-" > .gitignore
