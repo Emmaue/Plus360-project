@@ -8,7 +8,7 @@ SELECT
     signup_date,
     country,
     'crm' as source_system,
-    row_number() over (partition by customer_id order by signup_date asc) as rn,
+    row_number() over (partition by customer_id order by signup_date desc) as rn,
     customer_status
 FROM
     {{ ref('stg_customers') }}
