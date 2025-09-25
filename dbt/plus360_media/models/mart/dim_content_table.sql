@@ -4,6 +4,7 @@
 with base as (
     select
         content_pk,
+        content_id,
         coalesce(title, 'Unknown') as title,
         coalesce(author, 'Unknown') as author,
         coalesce(category, 'Unknown') as category,
@@ -17,6 +18,7 @@ with base as (
 
 select
     content_pk,
+    content_id,
     title,
     author,
     category,
