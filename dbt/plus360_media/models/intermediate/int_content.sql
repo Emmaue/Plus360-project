@@ -59,6 +59,7 @@ unioned as (
 -- Step 5: Generate surrogate pk
 select
     {{ generate_pk(['content_id', 'platform', 'source_system']) }} as content_pk,
+    content_id,
     title,
     author,
     category,
