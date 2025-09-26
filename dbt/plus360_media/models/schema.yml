@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer data from CRM contacts, includes basic profile and signup info."
+    columns:
+      - name: customer_id
+        description: "Unique identifier from CRM system."
+        tests: [not_null]
+      - name: signup_date
+        description: "Date the customer first signed up in the system."
+        tests: [not_null]
+      - name: phone
+        description: "Primary phone number of the customer."
+        tests: [not_null]
+
+  - name: stg_youtube_content
+    description: "Raw video metadata ingested from YouTube API."
+    columns:
+      - name: content_id
+        description: "Unique identifier of the YouTube video."
+        tests: [unique, not_null]
+      - name: upload_date
+        description: "Date the video was uploaded."
+        tests: [not_null]
+
+
+  - name: stg_product_plans
+    description: "Product plans from billing systems (e.g., Basic, Standard, Premium)."
+    columns:
+      - name: product_plan_id
+        description: "Unique identifier for the product plan."
+        tests: [unique, not_null]
+
+  - name: stg_newsletter
+    description: "Newsletter campaign metadata and identifiers."
+    columns:
+      - name: newsletter_id
+        description: "Unique identifier for newsletter campaigns."
+        tests: [unique, not_null]
+
+  - name: stg_youtube_engagement
+    description: "Engagement data from YouTube (likes, comments, views)."
+    columns:
+      - name: engagement_id
+        description: "Unique engagement identifier from YouTube events."
+        tests: [unique, not_null]
+      - name: content_id
+        description: "Foreign key to stg_youtube_content."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_youtube_content')
+                field: content_id

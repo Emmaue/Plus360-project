@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: int_customers
+    description: "Deduplicated customer data with standardized fields for downstream modeling."
+    columns:
+      - name: customer_id
+        description: "Customer natural key carried forward from staging."
+        tests: [unique, not_null]
+
+  - name: int_content
+    description: "Unified content model combining YouTube videos, newsletters, and internal content types."
+    columns:
+      - name: content_pk
+        description: "Surrogate key for content, generated from natural identifiers."
+        tests: [unique, not_null]
+
+  - name: int_engagement_events
+    description: "Normalized engagement events across YouTube and Newsletter sources."
+    columns:
+      - name: engagement_pk
+        description: "Surrogate key for engagement events."
+        tests: [unique, not_null]
+
+  - name: int_subscription_periods
+    description: "Subscription history with start and end dates per product plan."
+    columns:
+      - name: subscription_id
+        description: "Unique subscription identifier."
+        tests: [unique, not_null]

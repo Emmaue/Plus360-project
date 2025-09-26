@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Dimension table for customers, enriched with status and source system."
+    columns:
+      - name: customer_sk
+        description: "Surrogate key for the customer dimension."
+        tests: [unique, not_null]
+      - name: customer_id
+        description: "Business key from CRM source system."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('int_customers')
+                field: customer_id
+
+  - name: dim_content_table
+    description: "Dimension table for content (YouTube, Newsletters, Internal campaigns)."
+    columns:
+      - name: content_pk
+        description: "Surrogate key for the content dimension."
+        tests: [unique, not_null]
+      - name: content_id
+        description: "Natural business key from source systems."
+        tests: [not_null]
+
+  - name: dim_date_table
+    description: "Calendar dimension used for time-based joins."
+    columns:
+      - name: date_sk
+        description: "Surrogate key for the date."
+        tests: [unique, not_null]
+
+  - name: fct_engagement
+    description: "Fact table capturing engagement events (likes, comments, shares, opens, clicks)."
+    columns:
+      - name: engagement_pk
+        description: "Primary key for the fact table."
+        tests: [unique, not_null]
+      - name: content_id
+        description: "Foreign key to dim_content_table."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_content_table')
+                field: content_id
+      - name: customer_sk
+        description: "Foreign key to dim_customers."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_sk
+      - name: date_sk
+        description: "Foreign key to dim_date_table."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date_table')
+                field: date_sk
+
+  - name: fct_ads
+    description: "Fact table capturing ad revenue per content and date."
+    columns:
+      - name: ad_event_pk
+        description: "Primary key for the ad event fact."
+        tests: [unique, not_null]
+      - name: content_id
+        description: "Foreign key to dim_content_table."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_content_table')
+                field: content_id
+      - name: date_sk
+        description: "Foreign key to dim_date_table."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date_table')
+                field: date_sk
+
+  - name: fct_sub
+    description: "Fact table for customer subscriptions and renewals."
+    columns:
+      - name: subscription_id
+        description: "Unique subscription identifier."
+        tests: [unique, not_null]
+      - name: customer_id
+        description: "Foreign key to int_customers."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('int_customers')
+                field: customer_id
+
+  - name: fct_content_exposure
+    description: "Factless fact table capturing content exposures (impressions)."
+    columns:
+      - name: exposure_id
+        description: "Unique identifier for the exposure event."
+        tests: [unique, not_null]
