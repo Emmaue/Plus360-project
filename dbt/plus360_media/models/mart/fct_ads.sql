@@ -23,12 +23,6 @@ with base as (
     left join {{ ref('dim_date_table') }} d
         on a.date_key = d.date_sk
 
-
-
-
-    {% if is_incremental() %}
-        where a.revenue_date > (select max(revenue_date) from {{ this }})
-    {% endif %}
 )
 
 Select

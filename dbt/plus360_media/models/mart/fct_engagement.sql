@@ -31,9 +31,6 @@ with base as (
     left join {{ ref('dim_date_table') }} d
         on e.date_key = d.date_sk
 
-    {% if is_incremental() %}
-        where e.event_date > (select max(event_date) from {{ this }})
-    {% endif %}
 )
 
 
