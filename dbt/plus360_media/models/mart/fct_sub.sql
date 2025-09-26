@@ -10,7 +10,7 @@ with base as (
         customer_id,
         coalesce(full_name, 'n/a') as full_name,
         coalesce(country, 'No country') as country,
-        coalesce(product_plan_id, 'No id')product_plan_id,
+        coalesce(product_plan_id, 'No id') as product_plan_id,
         coalesce(product_plan, 'No plan') as product_plan,
         coalesce(billing_cycle, 'No cycle') as billing_cycle,
         coalesce(subscription_fee, 0) as subscription_fee,
