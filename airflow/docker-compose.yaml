@@ -20,6 +20,7 @@ x-airflow-common: &airflow-common
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./Files:/opt/airflow/files
+    - ../dbt:/opt/airflow/dbt 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     postgres:

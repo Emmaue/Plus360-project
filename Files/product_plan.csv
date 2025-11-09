@@ -1,9 +1,0 @@
-Product_plan_ID,Product_Plan,Billing_Cycle,Price
-pp001,Basic,Monthly,50
-pp002,Basic,Yearly,100
-pp003,Standard,Monthly,75
-pp004,Standard,Yearly,250
-pp005,Premium,Monthly,100
-pp006,Premium,Yearly,500
-pp007,Enterprise,Monthly,300
-pp008,Enterprise,Yearly,1000

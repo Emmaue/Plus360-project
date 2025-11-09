@@ -1,0 +1,3 @@
+Attendes, Gender, Location, Age
+James, Male, Jahi, 25
+Serah, Female, Wuse, 35
