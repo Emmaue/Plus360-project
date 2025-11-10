@@ -13,12 +13,13 @@ df = pd.read_csv("C:/Users/HP/Documents/Plus360 project/Files/time_dim.csv")
 df.columns = [col.upper() for col in df.columns]
 
 conn = snowflake.connector.connect(
-    user = 'EMMANUEL',
-    account = 'GVBQDXI-UC20219',
-    warehouse = 'Pulse_media',
-    database = 'pulse360_db',
-    password = 'Iamemmanueljustice@1',
-    schema = 'raw_schema'
+SF_USER = os.getenv("SF_USER")
+SF_PASSWORD = os.getenv("SF_PASSWORD")
+SF_ACCOUNT = os.getenv("SF_ACCOUNT")
+SF_WAREHOUSE = os.getenv("SF_WAREHOUSE")
+SF_DATABASE = os.getenv("SF_DATABASE")
+SF_SCHEMA = os.getenv("SF_SCHEMA")
+SF_TABLE = os.getenv("SF_TABLE")
 )
 
 success, nrows, nchunks, _ =write_pandas(
