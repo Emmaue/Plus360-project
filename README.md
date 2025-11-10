@@ -385,9 +385,11 @@ dbt test was also done to cheeck for data integrity and other constraints
 <img width="995" height="507" alt="image" src="https://github.com/user-attachments/assets/da1a7f83-0a09-4ff2-b025-a381d4b10ab8" />
 
 dbt dev tables after modeling in Snowflake
+
 <img width="318" height="512" alt="image" src="https://github.com/user-attachments/assets/09414fc4-015c-4882-8f50-5ab36070f035" />
 
 prod tables in snowflake
+
 <img width="311" height="520" alt="image" src="https://github.com/user-attachments/assets/129cd453-eca5-4715-9b22-1591a4073e7f" />
 
 dbt documentation for data cataloging
@@ -396,8 +398,159 @@ dbt documentation for data cataloging
 dbt doc lineage graph
 <img width="1280" height="543" alt="image" src="https://github.com/user-attachments/assets/b710cf98-b36e-410b-84b8-70e480f81d36" />
 
+## Orchestration and Automation: Apache Airflow
+The entire ELT pipeline is automated and monitored using Apache Airflow. This ensures the daily delivery of timely, fresh data to the analytics dashboard.
+
+### Airflow Development Environment
+- Containerization: The development and execution environment was containerized using Docker Compose, ensuring a consistent and isolated setup for Airflow's components (Webserver, Scheduler, Worker, Postgres, Redis).
+<img width="1259" height="639" alt="image" src="https://github.com/user-attachments/assets/cb7e87b0-2305-41db-8d68-674db71e5aa8" />
+
+- Startup: The docker compose start command initializes all required services, making the environment portable and reproducible.
+
+### Pipeline DAG Design and Execution
+The core data flow is managed by the youtube_ingestion_dag (which simulates the structure for all platform data).
+
+#### DAG Structure
+The DAG strictly enforces the dependencies of the ELT process:
+
+ingest_youtube_csvs (PythonOperator): Extract & Load (EL). Executes the custom Python script to pull data (simulating API/CSV ingestion) and load it into Snowflake's RAW_SCHEMA.
+
+dbt_run_staging (BashOperator): Transform (T). Runs the dbt staging models (dbt run --models staging.*).
+
+dbt_run_intermediate (BashOperator): Runs intermediate dbt models.
+
+dbt_run_mart (BashOperator): Runs the final dbt mart models (e.g., fact_engagement), implementing the incremental load strategy.
+
+dbt_test (BashOperator): Runs automated data quality tests (dbt test) to validate transformation logic and data integrity before reporting.
+```
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime
+
+default_args = {
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": datetime(2025, 1, 1),
+    "retries": 1,
+}
+
+def run_ingestion():
+    import youtube_ingestion_script
+    youtube_ingestion_script.main()
+
+with DAG(
+    "youtube_ingestion_dag",
+    default_args=default_args,
+    schedule_interval="@daily",
+    catchup=False,
+    description="Ingest YouTube CSVs into Snowflake"
+) as dag:
+
+    ingest_task = PythonOperator(
+        task_id="ingest_youtube_csvs",
+        python_callable=run_ingestion
+    )
+```
+The DAG is scheduled to run daily (schedule_interval="@daily"). The run logs demonstrate successful execution of the entire pipeline, confirming data is being extracted, loaded, transformed, and validated efficiently.
+
+dag graph setup
+<img width="1038" height="459" alt="image" src="https://github.com/user-attachments/assets/372026b4-6c5f-4cc8-8201-423b0e0b7712" />
+
+one of dag run for testing completed
+<img width="1280" height="500" alt="image" src="https://github.com/user-attachments/assets/73b39fa6-897f-47be-ad55-03c1763066a0" />
+
+## Data Consumption & Access Control
+The final step ensured that the clean, modeled data from the Snowflake Data Warehouse was securely and efficiently accessible by the business intelligence team using Power BI.
+
+### Role-Based Access Control (RBAC)
+A critical requirement was setting up proper access control to prevent analysts from interacting with raw or staging data and to ensure only the final, validated tables were visible.
+
+- Dedicated Schema: The analyst team was granted access only to the DBT_PROD_ANALYTICS schema within Snowflake's PULSE360_DB.
+
+- Permissions: Permissions were limited to SELECT privileges on the analytical tables, restricting access to RAW_SCHEMA, STAGING_SCHEMA, and INTERMEDIATE models.
+
+- Result: Power BI successfully connects and only displays the finalized Star Schema tables (e.g., DIM_CONTENT_TABLE, FCT_ENGAGEMENT, FCT_ADS), ensuring analysts use the single source of truth.
+
+### Power BI Data Connection
+Power BI connects directly to the optimized PostgreSQL analytical layer (or directly to Snowflake's DBT_PROD_ANALYTICS schema, as shown in the image).
+
+- Efficiency: The connection benefits from the PostgreSQL partitioning and indexing implemented earlier, leading to fast data refreshes and low-latency interaction with the dashboard.
+<img width="853" height="548" alt="image" src="https://github.com/user-attachments/assets/193c0caa-5dc7-49dd-8d51-ea50ee7f0994" />
+
+Data Validation: The data is pulled into Power Query, confirming the successful schema mapping and data types from the dbt models.
+<img width="1280" height="619" alt="image" src="https://github.com/user-attachments/assets/63b87b31-f23b-48fd-8207-960643287757" />
 
 
+Some of dashboards and insights created by the analyst 'ladylyst@gmail.com'
+<img width="791" height="457" alt="image" src="https://github.com/user-attachments/assets/5f7e1481-2d55-41bd-891c-20ca774e70b5" />
+
+<img width="772" height="452" alt="image" src="https://github.com/user-attachments/assets/955af939-4017-42e6-b366-a467517469a5" />
+
+<img width="782" height="444" alt="image" src="https://github.com/user-attachments/assets/a005deb8-b36e-439a-b963-a8cb11481000" />
+
+<img width="782" height="458" alt="image" src="https://github.com/user-attachments/assets/483577e6-2a43-450c-9c07-7db748c77ee2" />
+
+1. Key Performance Highlights 
+- Total Opens: 19M 
+- Newsletter Clicks: 3M 
+- YouTube Likes: 150K 
+- YouTube Watch Time: 150.74K hours (543M seconds) 
+- Total Revenue: $3.06M 
+- Subscription Revenue: $565.8K 
+- Ads Revenue: $2.50M
+  
+2. Platform Comparison 
+- YouTube generated $3.1M in revenue, five times higher than Newsletter’s $0.6M. While 
+- YouTube excels in monetization, newsletters achieve stronger click engagement, showing 
+complementary strengths.
+
+3. Category and Regional Insights 
+- Fitness, Food, and Tech are top-performing categories. Regionally, Africa and Asia show 
+rapid growth potential. Congo and Korea lead subscriber counts, reinforcing Pulse Media’s 
+global market presence.
+ 
+4. Revenue Breakdown 
+Ad revenue is evenly distributed across types, minimizing risk exposure. Revenue peaks on 
+Fridays align with engagement spikes, suggesting ideal timing for premium content 
+releases. 
+
+5. Recommendations 
+- Expand YouTube ad campaigns for higher ROI.
+-  Personalize newsletters to sustain high CTOR and retention. 
+- Introduce loyalty or referral programs to reduce churn. 
+- Focus marketing on top-earning categories. 
+- Align new content releases with Friday peaks. 
+- Strengthen regional engagement in Africa and Asia. 
+- Audit engagement funnels quarterly to optimize conversions.
+
+## Project Conclusion and Business Impact
+This project successfully established a robust, end-to-end Modern Data Stack for Pulse360 Media, directly addressing the critical business problem of declining user engagement and ad revenue. By consolidating disparate data sources into a centralized, governed data warehouse, the data engineering function transitioned the company from guesswork to data-driven decision-making.
+
+Key Project Achievements and Deliverables
+| **Area** | **Achievement** | **Technical Implementation** |
+|-----------|-----------------|-------------------------------|
+| **Data Governance** | Created a single source of truth for all content performance data. | Snowflake (Layered Architecture: RAW, STAGING, ANALYTICS) and RBAC for secure Power BI access. |
+| **Scalability** | Designed for efficiency in handling large, growing datasets. | dbt Incremental Loading and optimized data types (e.g., VARIANT for raw API loads). |
+| **Performance** | Optimized the final analytical layer for fast querying. | PostgreSQL Partitioning by Month and Indexing of primary keys. |
+| **Automation** | Ensured daily, reliable delivery of fresh data and insights. | Apache Airflow orchestration with Python and Bash Operators for ELT sequencing. |
+| **Modeling** | Delivered a clean, intuitive structure for complex cross-platform analysis. | Star Schema (Fact & Dimension tables) fully modeled in dbt. |
+
+## Addressing the Business Problem
+The final Analytical Data Mart now empowers content and marketing teams to answer their core questions with confidence:
+
+- Optimal Timing: By analyzing the FCT_ENGAGEMENT metrics against the DIM_TIME and DIM_DATE tables, teams can precisely determine the best days and hours to post content on each platform to maximize reach and interaction.
+
+- Content Relevance: Comparing engagement rates across content types and categories identifies the highest-performing themes to prioritize, resolving the debate between creators and marketers.
+- Monetization Insight: The pipeline provides a clear link between content, engagement, and the FCT_ADS table, allowing Pulse360 to understand how content strategy directly impacts ad revenue.
+
+In summary, the implementation of this scalable and automated data pipeline provides Pulse360 Media with the intelligence needed to refine its content strategy, reverse the engagement decline, and ultimately increase ad revenue.
+
+### Next Steps and Future Scope
+Future iterations of this project could include:
+
+- Integrating external tools like Great Expectations for advanced data quality testing within the dbt workflow.
+- Expanding the scope to include web traffic data (e.g., Google Analytics).
+- Developing ML models to forecast content performance and integrating them as a predictive task within the Airflow DAG
 
 
 
