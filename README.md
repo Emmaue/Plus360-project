@@ -1,7 +1,7 @@
 # Data-Driven Content Strategy: Uncovering Engagement Insights for Pulse360 Media
 
 ## Business Problem
- This project addresses a critical business problem for Pulse360 Media, a digital content company facing a drop in user engagement and ad revenue. I designed and implemented a Modern Data Stack to consolidate content performance metrics from disparate sources (YouTube, Salesforce CRM, and Newsletters) into a centralized, analytical data warehouse. The end-to-end pipeline leverages ELT (Extract, Load, Transform) principles to deliver actionable insights on content performance, optimal publishing schedules, and cross-platform synergy, empowering content and marketing teams to reverse the engagement decline.
+ This project addresses a critical business problem for Pulse360 Media, a digital content company facing a drop in user engagement and ad revenue. I designed and implemented a Modern Data Stack to consolidate content performance metrics from disparate sources (YouTube, PipeDrive CRM, and Newsletters) into a centralized, analytical data warehouse. The end-to-end pipeline leverages ELT (Extract, Load, Transform) principles to deliver actionable insights on content performance, optimal publishing schedules, and cross-platform synergy, empowering content and marketing teams to reverse the engagement decline.
 
  ## Project Goals
  - Extract data from PipeDrive CRM, YouTube API, and local newsletter CSVs.
